@@ -1,5 +1,5 @@
 const router = require("express").Router();
-// const Product = require("./../models/Product");
+const Property = require("./../models/Property");
 const multer = require("multer");
 const passport = require("passport");
 
@@ -32,8 +32,13 @@ router.get("/", (req, res, next) => {
 });
 
 //! Create Property Endpoint
-router.post("/", (req, res, next) => {
-   res.send("Create Property Endpoint");
+router.post("/", upload.single("image"), (req, res, next) => {
+   req.body.image = "public/" + req.file.filename;
+   Property.create(req.body)
+      .then((property) => {
+         res.send(property);
+      })
+      .catch(next);
 });
 
 //! Property Single Endpoint
