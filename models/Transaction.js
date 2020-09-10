@@ -41,7 +41,6 @@ const TransactionSchema = new Schema(
       paymentMode: {
          type: String,
          required: [true, "Status Required"],
-         default: "Pending",
       },
    },
    {

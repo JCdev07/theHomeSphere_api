@@ -55,7 +55,8 @@ app.use("/", (req, res, next) => {
 // error handling middleware
 app.use((err, req, res, next) => {
    console.log(err.message);
-   res.status(400).send({
+   res.status(400).json({
+      request: "failed",
       error: err.message,
    });
 });

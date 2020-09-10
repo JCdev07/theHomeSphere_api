@@ -18,7 +18,7 @@ router.get("/", (req, res, next) => {
    Review.find()
       .populate({
          path: "property",
-         select: "name _id",
+         select: "name",
       })
       .populate({
          path: "user",

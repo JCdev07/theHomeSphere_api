@@ -1,5 +1,5 @@
 const router = require("express").Router();
-// const Product = require("./../models/Product");
+const Transaction = require("./../models/Transaction");
 const multer = require("multer");
 const passport = require("passport");
 
@@ -8,6 +8,7 @@ const adminOnly = (req, res, next) => {
       next();
    } else {
       res.status(403).send({
+         request: "failed",
          error: "Forbidden",
       });
    }
@@ -17,9 +18,16 @@ const adminOnly = (req, res, next) => {
 router.get(
    "/",
    passport.authenticate("jwt", { session: false }),
+   adminOnly,
    (req, res, next) => {
-      console.log(req.user);
-      res.send("transaction Index Endpoint");
+      Transaction.find()
+         .then((transactions) => {
+            res.json({
+               request: "succes",
+               transactions,
+            });
+         })
+         .catch(err);
    }
 );
 
@@ -27,8 +35,16 @@ router.get(
 router.post(
    "/",
    passport.authenticate("jwt", { session: false }),
+   adminOnly,
    (req, res, next) => {
-      res.send("Create transaction Endpoint");
+      Transaction.create(req.body)
+         .then((transaction) => {
+            res.json({
+               request: "success",
+               transaction,
+            });
+         })
+         .catch(next);
    }
 );
 
@@ -37,7 +53,24 @@ router.get(
    "/:transactionId",
    passport.authenticate("jwt", { session: false }),
    (req, res, next) => {
-      res.send("transaction Single Endpoint");
+      Transaction.findById(req.params.transactionId)
+         .then((transaction) => {
+            if (
+               req.user.isAdmin === true ||
+               req.user._id === transaction.user
+            ) {
+               res.json({
+                  request: "success",
+                  transaction,
+               });
+            } else {
+               res.status(401).json({
+                  request: "failed",
+                  message: "forbidden",
+               });
+            }
+         })
+         .catch(next);
    }
 );
 
@@ -47,7 +80,15 @@ router.put(
    passport.authenticate("jwt", { session: false }),
    adminOnly,
    (req, res, next) => {
-      res.send("transaction Update Endpoint");
+      Transaction.findByIdAndUpdate(
+         req.params.transactionId,
+         { status: req.body.status },
+         {
+            new: true,
+         }
+      )
+         .then((transaction) => res.send(transaction))
+         .catch(next);
    }
 );
 
