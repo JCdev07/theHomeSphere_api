@@ -33,6 +33,7 @@ const adminOnly = (req, res, next) => {
 router.get(
    "/users",
    passport.authenticate("jwt", { session: false }),
+   adminOnly,
    (req, res, next) => {
       User.find().then((users) => {
          res.json({
