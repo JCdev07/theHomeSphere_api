@@ -23,7 +23,8 @@ const adminOnly = (req, res, next) => {
    if (req.user.isAdmin) {
       next();
    } else {
-      res.status(403).send({
+      res.status(403).json({
+         request: "failed",
          error: "Forbidden",
       });
    }
@@ -35,12 +36,14 @@ router.get(
    passport.authenticate("jwt", { session: false }),
    adminOnly,
    (req, res, next) => {
-      User.find().then((users) => {
-         res.json({
-            request: "success",
-            users,
-         });
-      });
+      User.find()
+         .then((users) => {
+            res.json({
+               request: "success",
+               users,
+            });
+         })
+         .then(next);
    }
 );
 
@@ -96,24 +99,27 @@ router.post("/login", (req, res, next) => {
             error: "Invalid email or password",
          });
       } else {
-         bcrypt.compare(password, user.password).then((result) => {
-            if (result) {
-               let { _id, fullname, email, isAdmin } = user;
-               let token = jwt.sign({ _id }, "secret_key");
-               console.log(token);
+         bcrypt
+            .compare(password, user.password)
+            .then((result) => {
+               if (result) {
+                  let { _id, fullname, email, isAdmin } = user;
+                  let token = jwt.sign({ _id }, "secret_key");
+                  console.log(token);
 
-               res.json({
-                  request: "success",
-                  message: "login successful",
-                  user: { _id, fullname, email, isAdmin },
-                  token,
-               });
-            } else {
-               res.status(400).send({
-                  error: "check credentials",
-               });
-            }
-         });
+                  res.json({
+                     request: "success",
+                     message: "login successful",
+                     user: { _id, fullname, email, isAdmin },
+                     token,
+                  });
+               } else {
+                  res.status(400).send({
+                     error: "check credentials",
+                  });
+               }
+            })
+            .then(next);
       }
    });
 });

@@ -7,7 +7,8 @@ const adminOnly = (req, res, next) => {
    if (req.user.isAdmin) {
       next();
    } else {
-      res.status(403).send({
+      res.status(403).json({
+         request: "failed",
          error: "Forbidden",
       });
    }
@@ -30,7 +31,8 @@ router.get("/", (req, res, next) => {
             quantity: reviews.length,
             reviews,
          });
-      });
+      })
+      .then(next);
 });
 
 //! Create Reviews Endpoint
@@ -38,12 +40,14 @@ router.post(
    "/",
    passport.authenticate("jwt", { session: false }),
    (req, res, next) => {
-      Review.create(req.body).then((review) => {
-         res.json({
-            request: "success",
-            review,
-         });
-      });
+      Review.create(req.body)
+         .then((review) => {
+            res.json({
+               request: "success",
+               review,
+            });
+         })
+         .then(next);
    }
 );
 

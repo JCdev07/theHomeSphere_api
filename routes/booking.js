@@ -9,6 +9,17 @@ const calculateBookingDays = (startDate, endDate) => {
    return (endDate - startDate) / (1000 * 60 * 60 * 24);
 };
 
+const normalUserOnly = (req, res, next) => {
+   if (!req.user.isAdmin) {
+      next();
+   } else {
+      res.status(403).json({
+         request: "failed",
+         error: "Forbidden",
+      });
+   }
+};
+
 /*
 @ request
 {
@@ -31,7 +42,8 @@ const calculateBookingDays = (startDate, endDate) => {
 //! Create transaction Endpoint
 router.post(
    "/",
-   // passport.authenticate("jwt", { session: false }),
+   passport.authenticate("jwt", { session: false }),
+   normalUserOnly,
    (req, res, next) => {
       let { startDate, endDate } = req.body;
 
@@ -55,7 +67,8 @@ router.post(
                   subtotal: bookingDays * property.price,
                },
             });
-         });
+         })
+         .then(next);
    }
 );
 
