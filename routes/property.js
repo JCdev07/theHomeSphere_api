@@ -65,6 +65,10 @@ router.post(
 //! Property Single Endpoint
 router.get("/:propertyId", (req, res, next) => {
    Property.findById(req.params.propertyId)
+      .populate({
+         path: "category",
+         select: "name",
+      })
       .then((property) => {
          res.json({
             request: "success",
