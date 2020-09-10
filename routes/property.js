@@ -30,6 +30,10 @@ const upload = multer({ storage: storage });
 //! Property Index Endpoint
 router.get("/", (req, res, next) => {
    Property.find()
+      .populate({
+         path: "category",
+         select: "name",
+      })
       .then((properties) => {
          res.json({
             request: "success",
