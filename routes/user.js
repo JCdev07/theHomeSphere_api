@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
+require("./../passport/passportSetup");
 
 // Multer
 // const storage = multer.diskStorage({
@@ -118,8 +119,12 @@ router.put("/:UserId", (req, res, next) => {
 });
 
 //! User Delete Endpoint
-router.delete("/:UserId", (req, res, next) => {
-   res.send("User Delete Endpoint");
-});
+router.get(
+   "/profile",
+   passport.authenticate("jwt", { session: false }),
+   (req, res, next) => {
+      res.send(req.user);
+   }
+);
 
 module.exports = router;
