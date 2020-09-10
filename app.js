@@ -11,6 +11,8 @@ const properties = require("./routes/property");
 const users = require("./routes/user");
 const reviews = require("./routes/review");
 const transactions = require("./routes/transaction");
+const booking = require("./routes/booking");
+
 require("dotenv").config();
 
 // Mongoose Connection
@@ -41,6 +43,7 @@ app.use("/categories", categories);
 app.use("/properties", properties);
 app.use("/reviews", reviews);
 app.use("/transactions", transactions);
+app.use("/booking", booking);
 
 // router Level Middleware
 app.use("/", (req, res, next) => {
