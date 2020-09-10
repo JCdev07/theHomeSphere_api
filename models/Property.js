@@ -33,12 +33,11 @@ const PropertySchema = new Schema(
          required: [true, "Price required"],
       },
       category: {
-         categoryId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Category",
-            required: [true, "Category required"],
-         },
+         type: mongoose.Schema.Types.ObjectId,
+         ref: "Category",
+         required: [true, "Category required"],
       },
+
       details: {
          bathroom: {
             type: Number,

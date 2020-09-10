@@ -14,7 +14,7 @@ const ReviewSchema = new Schema(
          ref: "Property",
          required: [true, "Review required"],
       },
-      User: {
+      user: {
          type: mongoose.Schema.Types.ObjectId,
          ref: "User",
          required: [true, "Review required"],

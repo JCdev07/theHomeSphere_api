@@ -11,7 +11,6 @@ const properties = require("./routes/property");
 const users = require("./routes/user");
 const reviews = require("./routes/review");
 const transactions = require("./routes/transaction");
-
 require("dotenv").config();
 
 // Mongoose Connection
