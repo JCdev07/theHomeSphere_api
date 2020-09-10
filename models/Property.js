@@ -3,6 +3,10 @@ const Schema = mongoose.Schema;
 
 const PropertySchema = new Schema(
    {
+      isRented: {
+         type: Boolean,
+         default: 0,
+      },
       name: {
          type: String,
          required: [true, "Name Fiel Required"],
