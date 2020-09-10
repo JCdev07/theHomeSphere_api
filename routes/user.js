@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const User = require("./../models/User");
+const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
@@ -89,16 +90,17 @@ router.post("/login", (req, res, next) => {
             error: "Invalid email or password",
          });
       } else {
-         bcrypt.compare(password, user.password).then(function (result) {
-            console.log(result);
-
+         bcrypt.compare(password, user.password).then((result) => {
             if (result) {
                let { _id, fullname, email, isAdmin } = user;
+               let token = jwt.sign({ _id }, "secret_key");
+               console.log(token);
 
                res.json({
                   request: "success",
                   message: "login successful",
                   user: { _id, fullname, email, isAdmin },
+                  token,
                });
             } else {
                res.status(400).send({
