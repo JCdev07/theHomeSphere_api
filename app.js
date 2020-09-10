@@ -6,6 +6,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Routes
+const categories = require("./routes/category");
 const properties = require("./routes/property");
 const users = require("./routes/user");
 const reviews = require("./routes/review");
@@ -36,6 +37,7 @@ app.use(cors());
 app.use("/public", express.static("assets/images"));
 
 // Middleware fo properties routes
+app.use("/categories", categories);
 app.use("/properties", properties);
 app.use("/users", users);
 app.use("/reviews", reviews);

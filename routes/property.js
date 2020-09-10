@@ -28,7 +28,14 @@ const adminOnly = (req, res, next) => {
 
 //! Property Index Endpoint
 router.get("/", (req, res, next) => {
-   res.send("Property Index Endpoint");
+   Property.find()
+      .then((properties) => {
+         res.json({
+            request: "success",
+            properties,
+         });
+      })
+      .catch(next);
 });
 
 //! Create Property Endpoint
@@ -36,24 +43,52 @@ router.post("/", upload.single("image"), (req, res, next) => {
    req.body.image = "public/" + req.file.filename;
    Property.create(req.body)
       .then((property) => {
-         res.send(property);
+         res.json({
+            request: "success",
+            property,
+         });
       })
       .catch(next);
 });
 
 //! Property Single Endpoint
 router.get("/:propertyId", (req, res, next) => {
-   res.send("Property Single Endpoint");
+   Property.findById(req.params.propertyId)
+      .then((property) => {
+         res.json({
+            request: "success",
+            property,
+         });
+      })
+      .catch(next);
 });
 
 //! Property Update Endpoint
-router.put("/:propertyId", (req, res, next) => {
-   res.send("Property Update Endpoint");
+router.put("/:propertyId", upload.single("image"), (req, res, next) => {
+   if (req.file) {
+      req.body.image = "public/" + req.file.filename;
+   }
+   Property.findByIdAndUpdate(req.params.propertyId, req.body, { new: true })
+      .then((property) => {
+         res.send({
+            request: "success",
+            message: "property edited",
+            property,
+         });
+      })
+      .catch(next);
 });
 
 //! Property Delete Endpoint
 router.delete("/:propertyId", (req, res, next) => {
-   res.send("Property Delete Endpoint");
+   Property.findByIdAndDelete(req.params.propertyId)
+      .then((property) =>
+         res.json({
+            request: "success",
+            message: "property has been deleted",
+         })
+      )
+      .catch(next);
 });
 
 module.exports = router;
