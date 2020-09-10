@@ -19,15 +19,15 @@ require("./../passport/passportSetup");
 
 // const upload = multer({ storage: storage });
 
-// const adminOnly = (req, res, next) => {
-//    if (req.user.isAdmin) {
-//       next();
-//    } else {
-//       res.status(403).send({
-//          error: "Forbidden",
-//       });
-//    }
-// };
+const adminOnly = (req, res, next) => {
+   if (req.user.isAdmin) {
+      next();
+   } else {
+      res.status(403).send({
+         error: "Forbidden",
+      });
+   }
+};
 
 //! User Index Endpoint
 router.get(

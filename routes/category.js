@@ -3,6 +3,16 @@ const Category = require("./../models/Category");
 const multer = require("multer");
 const passport = require("passport");
 
+const adminOnly = (req, res, next) => {
+   if (req.user.isAdmin) {
+      next();
+   } else {
+      res.status(403).send({
+         error: "Forbidden",
+      });
+   }
+};
+
 //! Property Index Endpoint
 router.get("/", (req, res, next) => {
    Category.find()
@@ -16,40 +26,55 @@ router.get("/", (req, res, next) => {
 });
 
 //! Create Property Endpoint
-router.post("/", (req, res, next) => {
-   Category.create(req.body)
-      .then((category) => {
-         res.json({
-            request: "success",
-            category,
-         });
-      })
-      .catch(next);
-});
+router.post(
+   "/",
+   passport.authenticate("jwt", { session: false }),
+   adminOnly,
+   (req, res, next) => {
+      Category.create(req.body)
+         .then((category) => {
+            res.json({
+               request: "success",
+               category,
+            });
+         })
+         .catch(next);
+   }
+);
 
 //! Property Single Endpoint
-router.get("/:categoryId", (req, res, next) => {
-   Category.findById(req.params.categoryId)
-      .then((category) => {
-         res.json({
-            request: "success",
-            category,
-         });
-      })
-      .catch(next);
-});
+router.get(
+   "/:categoryId",
+   passport.authenticate("jwt", { session: false }),
+   adminOnly,
+   (req, res, next) => {
+      Category.findById(req.params.categoryId)
+         .then((category) => {
+            res.json({
+               request: "success",
+               category,
+            });
+         })
+         .catch(next);
+   }
+);
 
 //! Property Update Endpoint
-router.put("/:categoryId", (req, res, next) => {
-   Category.findByIdAndUpdate(req.params.categoryId, req.body, { new: true })
-      .then((category) => {
-         res.send({
-            request: "success",
-            message: "property edited",
-            category,
-         });
-      })
-      .catch(next);
-});
+router.put(
+   "/:categoryId",
+   passport.authenticate("jwt", { session: false }),
+   adminOnly,
+   (req, res, next) => {
+      Category.findByIdAndUpdate(req.params.categoryId, req.body, { new: true })
+         .then((category) => {
+            res.send({
+               request: "success",
+               message: "property edited",
+               category,
+            });
+         })
+         .catch(next);
+   }
+);
 
 module.exports = router;

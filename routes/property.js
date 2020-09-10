@@ -2,6 +2,17 @@ const router = require("express").Router();
 const Property = require("./../models/Property");
 const multer = require("multer");
 const passport = require("passport");
+require("./../auth/isAdmin");
+
+const adminOnly = (req, res, next) => {
+   if (req.user.isAdmin) {
+      next();
+   } else {
+      res.status(403).send({
+         error: "Forbidden",
+      });
+   }
+};
 
 // Multer
 const storage = multer.diskStorage({
@@ -15,16 +26,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
-const adminOnly = (req, res, next) => {
-   if (req.user.isAdmin) {
-      next();
-   } else {
-      res.status(403).send({
-         error: "Forbidden",
-      });
-   }
-};
 
 //! Property Index Endpoint
 router.get("/", (req, res, next) => {
@@ -43,6 +44,7 @@ router.post(
    "/",
    upload.single("image"),
    passport.authenticate("jwt", { session: false }),
+   adminOnly,
    (req, res, next) => {
       req.body.image = "public/" + req.file.filename;
       Property.create(req.body)
@@ -73,6 +75,7 @@ router.put(
    "/:propertyId",
    upload.single("image"),
    passport.authenticate("jwt", { session: false }),
+   adminOnly,
    (req, res, next) => {
       if (req.file) {
          req.body.image = "public/" + req.file.filename;
@@ -93,6 +96,7 @@ router.put(
 router.delete(
    "/:propertyId",
    passport.authenticate("jwt", { session: false }),
+   adminOnly,
    (req, res, next) => {
       Property.findByIdAndDelete(req.params.propertyId)
          .then((property) =>
