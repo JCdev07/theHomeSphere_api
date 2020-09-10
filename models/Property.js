@@ -62,7 +62,11 @@ const PropertySchema = new Schema(
          },
       },
    },
-   { timestamps: true }
+   {
+      timestamps: true,
+      toJSON: { virtuals: true },
+      toObject: { virtuals: true },
+   }
 );
 
 module.exports = mongoose.model("Property", PropertySchema);
