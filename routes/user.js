@@ -1,6 +1,7 @@
 const router = require("express").Router();
-// const Product = require("./../models/Product");
+const User = require("./../models/User");
 const multer = require("multer");
+const bcrypt = require("bcrypt");
 const passport = require("passport");
 
 // Multer
@@ -27,18 +28,86 @@ const passport = require("passport");
 // };
 
 //! User Index Endpoint
-router.get("/", (req, res, next) => {
-   res.send("User Index Endpoint");
+router.get("/users", (req, res, next) => {
+   User.find().then((users) => {
+      res.json({
+         request: "success",
+         users,
+      });
+   });
 });
 
-//! Create User Endpoint
-router.post("/", (req, res, next) => {
-   res.send("Create User Endpoint");
+//! Register User Endpoint
+router.post("/register", (req, res, next) => {
+   let { password, confirmPassword } = req.body;
+   const saltRounds = 10;
+
+   if (password.length < 8) {
+      res.status(400).json({
+         request: "fail",
+         error: "Password must be atleast 8 characters",
+      });
+   }
+
+   if (password !== confirmPassword) {
+      res.status(400).json({
+         request: "fail",
+         error: "Password and confirm password do not match",
+      });
+   }
+
+   bcrypt.genSalt(saltRounds, (err, salt) => {
+      bcrypt.hash(password, salt, (err, hash) => {
+         req.body.password = hash;
+         User.create(req.body)
+            .then((user) => {
+               res.json({
+                  request: "success",
+                  user,
+               });
+            })
+            .catch(next);
+      });
+   });
 });
 
-//! User Single Endpoint
-router.get("/:UserId", (req, res, next) => {
-   res.send("User Single Endpoint");
+//! User Login Endpoint
+router.post("/login", (req, res, next) => {
+   let { email, password } = req.body;
+
+   if (!email || !password) {
+      return res.status(400).json({
+         request: "failed",
+         error: "Email and Password required",
+      });
+   }
+
+   User.findOne({ email }).then((user) => {
+      if (!user) {
+         res.status(400).json({
+            request: "failed",
+            error: "Invalid email or password",
+         });
+      } else {
+         bcrypt.compare(password, user.password).then(function (result) {
+            console.log(result);
+
+            if (result) {
+               let { _id, fullname, email, isAdmin } = user;
+
+               res.json({
+                  request: "success",
+                  message: "login successful",
+                  user: { _id, fullname, email, isAdmin },
+               });
+            } else {
+               res.status(400).send({
+                  error: "check credentials",
+               });
+            }
+         });
+      }
+   });
 });
 
 //! User Update Endpoint

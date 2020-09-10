@@ -36,10 +36,10 @@ app.use(cors());
 // Middleware fo saving images
 app.use("/public", express.static("assets/images"));
 
-// Middleware fo properties routes
+// Middleware for routes
+app.use("/", users);
 app.use("/categories", categories);
 app.use("/properties", properties);
-app.use("/users", users);
 app.use("/reviews", reviews);
 app.use("/transactions", transactions);
 
