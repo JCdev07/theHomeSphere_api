@@ -39,17 +39,22 @@ router.get("/", (req, res, next) => {
 });
 
 //! Create Property Endpoint
-router.post("/", upload.single("image"), (req, res, next) => {
-   req.body.image = "public/" + req.file.filename;
-   Property.create(req.body)
-      .then((property) => {
-         res.json({
-            request: "success",
-            property,
-         });
-      })
-      .catch(next);
-});
+router.post(
+   "/",
+   upload.single("image"),
+   passport.authenticate("jwt", { session: false }),
+   (req, res, next) => {
+      req.body.image = "public/" + req.file.filename;
+      Property.create(req.body)
+         .then((property) => {
+            res.json({
+               request: "success",
+               property,
+            });
+         })
+         .catch(next);
+   }
+);
 
 //! Property Single Endpoint
 router.get("/:propertyId", (req, res, next) => {
@@ -64,31 +69,40 @@ router.get("/:propertyId", (req, res, next) => {
 });
 
 //! Property Update Endpoint
-router.put("/:propertyId", upload.single("image"), (req, res, next) => {
-   if (req.file) {
-      req.body.image = "public/" + req.file.filename;
+router.put(
+   "/:propertyId",
+   upload.single("image"),
+   passport.authenticate("jwt", { session: false }),
+   (req, res, next) => {
+      if (req.file) {
+         req.body.image = "public/" + req.file.filename;
+      }
+      Property.findByIdAndUpdate(req.params.propertyId, req.body, { new: true })
+         .then((property) => {
+            res.send({
+               request: "success",
+               message: "property edited",
+               property,
+            });
+         })
+         .catch(next);
    }
-   Property.findByIdAndUpdate(req.params.propertyId, req.body, { new: true })
-      .then((property) => {
-         res.send({
-            request: "success",
-            message: "property edited",
-            property,
-         });
-      })
-      .catch(next);
-});
+);
 
 //! Property Delete Endpoint
-router.delete("/:propertyId", (req, res, next) => {
-   Property.findByIdAndDelete(req.params.propertyId)
-      .then((property) =>
-         res.json({
-            request: "success",
-            message: "property has been deleted",
-         })
-      )
-      .catch(next);
-});
+router.delete(
+   "/:propertyId",
+   passport.authenticate("jwt", { session: false }),
+   (req, res, next) => {
+      Property.findByIdAndDelete(req.params.propertyId)
+         .then((property) =>
+            res.json({
+               request: "success",
+               message: "property has been deleted",
+            })
+         )
+         .catch(next);
+   }
+);
 
 module.exports = router;

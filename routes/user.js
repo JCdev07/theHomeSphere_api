@@ -30,14 +30,18 @@ require("./../passport/passportSetup");
 // };
 
 //! User Index Endpoint
-router.get("/users", (req, res, next) => {
-   User.find().then((users) => {
-      res.json({
-         request: "success",
-         users,
+router.get(
+   "/users",
+   passport.authenticate("jwt", { session: false }),
+   (req, res, next) => {
+      User.find().then((users) => {
+         res.json({
+            request: "success",
+            users,
+         });
       });
-   });
-});
+   }
+);
 
 //! Register User Endpoint
 router.post("/register", (req, res, next) => {
