@@ -6,17 +6,23 @@ const passport = require("passport");
 const AppError = require("./../utils/appError");
 const sharp = require("sharp");
 const adminOnly = require("./../utils/isAdminOnly");
+const catchAsync = require("./../utils/catchAsync");
 
-// Multer
-// const storage = multer.diskStorage({
-//    destination: function (req, file, cb) {
-//       cb(null, "assets/images");
-//    },
-//    filename: function (req, file, cb) {
-//       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-//       cb(null, file.fieldname + "-" + uniqueSuffix + file.originalname);
-//    },
-// });
+// const fileResize = (req, res, next) => {
+//    console.log(req.files);
+//    if (!req.file) return next();
+
+//    req.file.filename = `property-${
+//       Date.now() + "-" + Math.round(Math.random() * 1e9)
+//    }.jpeg`;
+
+//    sharp(req.file.buffer)
+//       .toFormat("jpeg")
+//       .jpeg({ quality: 80 })
+//       .toFile(`assets/images/${req.file.filename}`);
+
+//    next();
+// };
 
 const storage = multer.memoryStorage();
 
@@ -28,22 +34,48 @@ const multerFilter = (req, file, cb) => {
    }
 };
 
-const fileResize = (req, res, next) => {
-   if (!req.file) return next();
+const upload = multer({ storage: storage, fileFilter: multerFilter });
 
-   req.file.filename = `property-${
-      Date.now() + "-" + Math.round(Math.random() * 1e9)
-   }.jpeg`;
+const multipleImages = upload.fields([
+   { name: "coverImage", maxCount: 1 },
+   { name: "images", maxCount: 3 },
+]);
 
-   sharp(req.file.buffer)
+const fileResize = catchAsync(async (req, res, next) => {
+   console.log(req.files);
+   if (!req.files.coverImage || !req.files.images) return next();
+
+   const coveImageFileName = `property-${
+      req.body.category
+   }-${Date.now()}-cover.jpeg`;
+
+   // 1) process coverImage
+   await sharp(req.files.coverImage[0].buffer)
+      .resize(2000, 1333)
       .toFormat("jpeg")
       .jpeg({ quality: 80 })
-      .toFile(`assets/images/${req.file.filename}`);
+      .toFile(`assets/img/property/${coveImageFileName}`);
+   req.body.coverImage = `public/${coveImageFileName}`;
 
+   // 2) loop images
+   req.body.images = [];
+   await Promise.all(
+      req.files.images.map(async (file, i) => {
+         const filename = `property-${req.body.category}-${Date.now()}-${
+            i + 1
+         }.jpeg`;
+
+         await sharp(file.buffer)
+            .resize(2000, 1333)
+            .toFormat("jpeg")
+            .jpeg({ quality: 80 })
+            .toFile(`assets/img/property/${filename}`);
+         req.body.images.push(`public/${filename}`);
+      })
+   );
+   console.log(req.body);
    next();
-};
-
-const upload = multer({ storage: storage, fileFilter: multerFilter });
+});
 
 //! Property Index Endpoint
 router.get("/", (req, res, next) => {
@@ -65,12 +97,11 @@ router.get("/", (req, res, next) => {
 //! Create Property Endpoint
 router.post(
    "/",
-   upload.single("image"),
-   fileResize,
    passport.authenticate("jwt", { session: false }),
    adminOnly,
+   multipleImages,
+   fileResize,
    (req, res, next) => {
-      req.body.image = "public/" + req.file.filename;
       Property.create(req.body)
          .then((property) => {
             res.json({

@@ -12,7 +12,7 @@ const PropertySchema = new Schema(
          required: [true, "Name Fiel Required"],
       },
       images: [String],
-      image: {
+      coverImage: {
          type: String,
          required: [true, "Cover Image required"],
       },
