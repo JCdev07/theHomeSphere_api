@@ -9,7 +9,6 @@ const port = process.env.PORT || 3000;
 const categories = require("./routes/category");
 const properties = require("./routes/property");
 const users = require("./routes/user");
-const reviews = require("./routes/review");
 const transactions = require("./routes/transaction");
 const booking = require("./routes/booking");
 
@@ -41,7 +40,6 @@ app.use("/public", express.static("assets/images"));
 app.use("/", users);
 app.use("/categories", categories);
 app.use("/properties", properties);
-app.use("/reviews", reviews);
 app.use("/transactions", transactions);
 app.use("/booking", booking);
 

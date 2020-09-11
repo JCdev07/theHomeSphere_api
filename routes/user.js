@@ -43,7 +43,7 @@ router.get(
                users,
             });
          })
-         .then(next);
+         .catch(next);
    }
 );
 
@@ -119,7 +119,7 @@ router.post("/login", (req, res, next) => {
                   });
                }
             })
-            .then(next);
+            .catch(next);
       }
    });
 });

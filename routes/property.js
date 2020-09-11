@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Property = require("./../models/Property");
+const Review = require("./../models/Review");
 const multer = require("multer");
 const passport = require("passport");
 const AppError = require("./../utils/appError");
@@ -36,9 +37,9 @@ const multerFilter = (req, file, cb) => {
    }
 };
 
-const fileResize = (req, res, next) => {
-   if (!req.file) return next();
-};
+// const fileResize = (req, res, next) => {
+//    if (!req.file) return next();
+// };
 
 const upload = multer({ storage: storage, fileFilter: multerFilter });
 
@@ -84,6 +85,7 @@ router.get("/:propertyId", (req, res, next) => {
          path: "category",
          select: "name",
       })
+      .populate("reviews")
       .then((property) => {
          res.json({
             request: "success",
@@ -128,6 +130,28 @@ router.delete(
                message: "property has been deleted",
             })
          )
+         .catch(next);
+   }
+);
+
+//! Create Reviews Endpoint
+router.post(
+   "/:propertyId/reviews",
+   passport.authenticate("jwt", { session: false }),
+   // calcAverageRating,
+   (req, res, next) => {
+      Review.create({
+         review: req.body.review,
+         rating: req.body.rating,
+         user: req.user.id,
+         property: req.params.propertyId,
+      })
+         .then((review) => {
+            res.json({
+               request: "success",
+               review,
+            });
+         })
          .catch(next);
    }
 );

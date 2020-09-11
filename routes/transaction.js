@@ -27,7 +27,7 @@ router.get(
                transactions,
             });
          })
-         .catch(err);
+         .catch(next);
    }
 );
 

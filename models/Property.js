@@ -60,10 +60,16 @@ const PropertySchema = new Schema(
       },
    },
    {
-      timestamps: true,
       toJSON: { virtuals: true },
       toObject: { virtuals: true },
    }
 );
+
+// Virtual Populate
+PropertySchema.virtual("reviews", {
+   ref: "Review",
+   foreignField: "property",
+   localField: "_id",
+});
 
 module.exports = mongoose.model("Property", PropertySchema);
