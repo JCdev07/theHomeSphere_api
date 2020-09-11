@@ -2,6 +2,8 @@ const router = require("express").Router();
 const Transaction = require("./../models/Transaction");
 const multer = require("multer");
 const passport = require("passport");
+const calculateBookingDays = require("./../utils/calcBookingDays");
+const Property = require("../models/Property");
 
 const adminOnly = (req, res, next) => {
    if (req.user.isAdmin) {
@@ -35,14 +37,29 @@ router.get(
 router.post(
    "/",
    passport.authenticate("jwt", { session: false }),
-   adminOnly,
    (req, res, next) => {
-      Transaction.create(req.body)
-         .then((transaction) => {
-            res.json({
-               request: "success",
-               transaction,
-            });
+      let { startDate, endDate } = req.body;
+
+      Property.findById(req.body.property)
+         .then((property) => {
+            req.body.bookingDays = calculateBookingDays(startDate, endDate);
+            req.body.user = req.user._id;
+
+            Transaction.create({
+               ...req.body,
+               total: req.body.bookingDays * property.price,
+               startDate: new Date(startDate),
+               endDate: new Date(endDate),
+            })
+
+               .then((transaction) => {
+                  res.json({
+                     request: "success",
+                     transaction,
+                  });
+               })
+
+               .catch(next);
          })
          .catch(next);
    }

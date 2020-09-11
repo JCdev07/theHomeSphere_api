@@ -3,10 +3,6 @@ const Schema = mongoose.Schema;
 
 const TransactionSchema = new Schema(
    {
-      transactionCode: {
-         type: String,
-         required: [true, "Transaction Code Required"],
-      },
       property: {
          type: mongoose.Schema.Types.ObjectId,
          ref: "Property",
@@ -49,5 +45,9 @@ const TransactionSchema = new Schema(
       toObject: { virtuals: true },
    }
 );
+
+TransactionSchema.virtual("transactionId").get(function () {
+   return `THS${this._id}`;
+});
 
 module.exports = mongoose.model("Transaction", TransactionSchema);

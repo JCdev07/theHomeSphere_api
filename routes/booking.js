@@ -2,12 +2,7 @@ const router = require("express").Router();
 const multer = require("multer");
 const Property = require("./../models/Property");
 const passport = require("passport");
-
-const calculateBookingDays = (startDate, endDate) => {
-   startDate = new Date(startDate).getTime();
-   endDate = new Date(endDate).getTime();
-   return (endDate - startDate) / (1000 * 60 * 60 * 24);
-};
+const calculateBookingDays = require("./../utils/calcBookingDays");
 
 const normalUserOnly = (req, res, next) => {
    if (!req.user.isAdmin) {
@@ -68,7 +63,7 @@ router.post(
                },
             });
          })
-         .then(next);
+         .catch(next);
    }
 );
 
