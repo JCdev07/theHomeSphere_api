@@ -42,6 +42,10 @@ const TransactionSchema = new Schema(
          type: String,
          required: [true, "Status Required"],
       },
+      isPaid: {
+         type: Boolean,
+         default: true,
+      },
    },
    {
       timestamps: true,
