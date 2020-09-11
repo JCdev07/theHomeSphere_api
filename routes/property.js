@@ -50,6 +50,7 @@ router.get("/", (req, res, next) => {
          path: "category",
          select: "name",
       })
+      .populate("reviews")
       .then((properties) => {
          res.json({
             request: "success",

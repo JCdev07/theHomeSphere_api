@@ -16,16 +16,6 @@ const PropertySchema = new Schema(
          type: String,
          required: [true, "Cover Image required"],
       },
-      ratingsAverage: {
-         type: Number,
-         required: [true, "Cover Image required"],
-         default: 0,
-      },
-      ratingsQuantity: {
-         type: Number,
-         required: [true, "Cover Image required"],
-         default: 0,
-      },
       price: {
          type: Number,
          required: [true, "Price required"],
@@ -71,5 +61,22 @@ PropertySchema.virtual("reviews", {
    foreignField: "property",
    localField: "_id",
 });
+
+PropertySchema.virtual("ratingsAverage").get(function () {
+   let average;
+   if (this.reviews) {
+      let reviewValues = this.reviews.map((review) => review.rating);
+      let total = reviewValues.reduce((total, current) => total + current);
+      average = total / reviewValues.length;
+      return average;
+   }
+});
+
+PropertySchema.virtual("ratingsQuantity").get(function () {
+   if (this.reviews) {
+      return this.reviews.length;
+   }
+});
+// PropertySchema.virtual("ratingsQuantity");
 
 module.exports = mongoose.model("Property", PropertySchema);
