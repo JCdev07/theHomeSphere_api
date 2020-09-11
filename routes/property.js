@@ -5,18 +5,7 @@ const multer = require("multer");
 const passport = require("passport");
 const AppError = require("./../utils/appError");
 const sharp = require("sharp");
-require("./../auth/isAdmin");
-
-const adminOnly = (req, res, next) => {
-   if (req.user.isAdmin) {
-      next();
-   } else {
-      res.status(403).json({
-         request: "failed",
-         error: "Forbidden",
-      });
-   }
-};
+const adminOnly = require("./../utils/isAdminOnly");
 
 // Multer
 const storage = multer.diskStorage({

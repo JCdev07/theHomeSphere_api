@@ -1,20 +1,9 @@
 const router = require("express").Router();
 const Transaction = require("./../models/Transaction");
-const multer = require("multer");
+const Property = require("../models/Property");
 const passport = require("passport");
 const calculateBookingDays = require("./../utils/calcBookingDays");
-const Property = require("../models/Property");
-
-const adminOnly = (req, res, next) => {
-   if (req.user.isAdmin) {
-      next();
-   } else {
-      res.status(403).send({
-         request: "failed",
-         error: "Forbidden",
-      });
-   }
-};
+const adminOnly = require("./../utils/isAdminOnly");
 
 //! transaction Index Endpoint
 router.get(

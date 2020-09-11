@@ -3,17 +3,7 @@ const multer = require("multer");
 const Property = require("./../models/Property");
 const passport = require("passport");
 const calculateBookingDays = require("./../utils/calcBookingDays");
-
-const normalUserOnly = (req, res, next) => {
-   if (!req.user.isAdmin) {
-      next();
-   } else {
-      res.status(403).json({
-         request: "failed",
-         error: "Forbidden",
-      });
-   }
-};
+const normalUserOnly = require("./../utils/normalUserOnly");
 
 /*
 @ request
@@ -51,6 +41,7 @@ router.post(
 
       Property.findById(req.body.property)
          .populate("category", ["name"])
+         .populate("reviews")
          .then((property) => {
             return res.json({
                request: "success",

@@ -64,7 +64,7 @@ PropertySchema.virtual("reviews", {
 
 PropertySchema.virtual("ratingsAverage").get(function () {
    let average;
-   if (this.reviews) {
+   if (this.reviews.length) {
       let reviewValues = this.reviews.map((review) => review.rating);
       let total = reviewValues.reduce((total, current) => total + current);
       average = total / reviewValues.length;

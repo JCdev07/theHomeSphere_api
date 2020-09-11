@@ -2,17 +2,7 @@ const router = require("express").Router();
 const Category = require("./../models/Category");
 const multer = require("multer");
 const passport = require("passport");
-
-const adminOnly = (req, res, next) => {
-   if (req.user.isAdmin) {
-      next();
-   } else {
-      res.status(403).json({
-         request: "failed",
-         error: "Forbidden",
-      });
-   }
-};
+const adminOnly = require("./../utils/isAdminOnly");
 
 //! Property Index Endpoint
 router.get("/", (req, res, next) => {

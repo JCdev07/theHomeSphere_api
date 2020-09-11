@@ -18,16 +18,20 @@ const TransactionSchema = new Schema(
          required: [true, "Booking Days Required"],
       },
       startDate: {
-         type: String,
+         type: Date,
          required: [true, "Start Date Required"],
       },
       endDate: {
-         type: String,
+         type: Date,
          required: [true, "End Date Required"],
       },
       total: {
          type: Number,
          required: [true, "Total Required"],
+      },
+      numberOfGuest: {
+         type: Number,
+         required: [true, "numberOfGuest Required"],
       },
       status: {
          type: String,

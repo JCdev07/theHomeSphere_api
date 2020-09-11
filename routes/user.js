@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
+const adminOnly = require("./../utils/isAdminOnly");
 require("./../passport/passportSetup");
 
 // Multer
@@ -18,17 +19,6 @@ require("./../passport/passportSetup");
 // });
 
 // const upload = multer({ storage: storage });
-
-const adminOnly = (req, res, next) => {
-   if (req.user.isAdmin) {
-      next();
-   } else {
-      res.status(403).json({
-         request: "failed",
-         error: "Forbidden",
-      });
-   }
-};
 
 //! User Index Endpoint
 router.get(
