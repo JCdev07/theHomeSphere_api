@@ -8,15 +8,17 @@ const sharp = require("sharp");
 const adminOnly = require("./../utils/isAdminOnly");
 
 // Multer
-const storage = multer.diskStorage({
-   destination: function (req, file, cb) {
-      cb(null, "assets/images");
-   },
-   filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      cb(null, file.fieldname + "-" + uniqueSuffix + file.originalname);
-   },
-});
+// const storage = multer.diskStorage({
+//    destination: function (req, file, cb) {
+//       cb(null, "assets/images");
+//    },
+//    filename: function (req, file, cb) {
+//       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+//       cb(null, file.fieldname + "-" + uniqueSuffix + file.originalname);
+//    },
+// });
+
+const storage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
    if (file.mimetype.startsWith("image")) {
@@ -26,9 +28,20 @@ const multerFilter = (req, file, cb) => {
    }
 };
 
-// const fileResize = (req, res, next) => {
-//    if (!req.file) return next();
-// };
+const fileResize = (req, res, next) => {
+   if (!req.file) return next();
+
+   req.file.filename = `property-${
+      Date.now() + "-" + Math.round(Math.random() * 1e9)
+   }.jpeg`;
+
+   sharp(req.file.buffer)
+      .toFormat("jpeg")
+      .jpeg({ quality: 80 })
+      .toFile(`assets/images/${req.file.filename}`);
+
+   next();
+};
 
 const upload = multer({ storage: storage, fileFilter: multerFilter });
 
@@ -53,6 +66,7 @@ router.get("/", (req, res, next) => {
 router.post(
    "/",
    upload.single("image"),
+   fileResize,
    passport.authenticate("jwt", { session: false }),
    adminOnly,
    (req, res, next) => {
