@@ -11,6 +11,7 @@ const properties = require("./routes/property");
 const users = require("./routes/user");
 const transactions = require("./routes/transaction");
 const booking = require("./routes/booking");
+const contacts = require("./routes/contact");
 
 require("dotenv").config();
 
@@ -42,6 +43,7 @@ app.use("/categories", categories);
 app.use("/properties", properties);
 app.use("/transactions", transactions);
 app.use("/booking", booking);
+app.use("/contact", contacts);
 
 // router Level Middleware
 app.use("/", (req, res, next) => {
