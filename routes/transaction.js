@@ -29,7 +29,11 @@ router.post(
    (req, res, next) => {
       let { startDate, endDate } = req.body;
 
-      Property.findById(req.body.property)
+      Property.findByIdAndUpdate(
+         req.body.property,
+         { isRented: true },
+         { new: true }
+      )
          .then((property) => {
             req.body.bookingDays = calculateBookingDays(startDate, endDate);
             req.body.user = req.user._id;

@@ -63,12 +63,15 @@ PropertySchema.virtual("reviews", {
 });
 
 PropertySchema.virtual("ratingsAverage").get(function () {
+   console.log();
    let average;
-   if (this.reviews.length) {
+   if (this.reviews) {
       let reviewValues = this.reviews.map((review) => review.rating);
-      let total = reviewValues.reduce((total, current) => total + current);
-      average = total / reviewValues.length;
-      return average;
+      if (reviewValues.length) {
+         let total = reviewValues.reduce((total, current) => total + current);
+         average = total / reviewValues.length;
+         return average;
+      }
    }
 });
 
