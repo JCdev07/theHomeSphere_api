@@ -11,9 +11,7 @@ const PropertySchema = new Schema(
          type: String,
          required: [true, "Name Fiel Required"],
       },
-      images: {
-         type: Array,
-      },
+      images: [String],
       image: {
          type: String,
          required: [true, "Cover Image required"],

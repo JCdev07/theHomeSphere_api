@@ -2,6 +2,8 @@ const router = require("express").Router();
 const Property = require("./../models/Property");
 const multer = require("multer");
 const passport = require("passport");
+const AppError = require("./../utils/appError");
+const sharp = require("sharp");
 require("./../auth/isAdmin");
 
 const adminOnly = (req, res, next) => {
@@ -26,7 +28,19 @@ const storage = multer.diskStorage({
    },
 });
 
-const upload = multer({ storage: storage });
+const multerFilter = (req, file, cb) => {
+   if (file.mimetype.startsWith("image")) {
+      cb(null, true);
+   } else {
+      cb(new AppError("Not an image! Please upload only images", 400), false);
+   }
+};
+
+const fileResize = (req, res, next) => {
+   if (!req.file) return next();
+};
+
+const upload = multer({ storage: storage, fileFilter: multerFilter });
 
 //! Property Index Endpoint
 router.get("/", (req, res, next) => {
