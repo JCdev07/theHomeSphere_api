@@ -16,7 +16,10 @@ const contacts = require("./routes/contact");
 require("dotenv").config();
 
 // Mongoose Connection
-mongoose.connect("mongodb://localhost:27017/homesphere", {
+// mongoose.connect(
+//    "mongodb+srv://admin:admin1234@cluster0.xdef2.mongodb.net/HomeSphere?retryWrites=true&w=majority",
+//    {
+mongoose.connect(process.env.ATLAS, {
    useNewUrlParser: true,
    useUnifiedTopology: true,
    useCreateIndex: true,
