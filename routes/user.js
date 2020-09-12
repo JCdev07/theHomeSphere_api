@@ -49,13 +49,6 @@ router.post("/register", (req, res, next) => {
       });
    }
 
-   if (password !== confirmPassword) {
-      res.status(400).json({
-         request: "fail",
-         error: "Password and confirm password do not match",
-      });
-   }
-
    bcrypt.genSalt(saltRounds, (err, salt) => {
       bcrypt.hash(password, salt, (err, hash) => {
          req.body.password = hash;
