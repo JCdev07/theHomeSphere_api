@@ -54,7 +54,7 @@ const fileResize = catchAsync(async (req, res, next) => {
       .resize(2000, 1333)
       .toFormat("jpeg")
       .jpeg({ quality: 80 })
-      .toFile(`assets/img/property/${coveImageFileName}`);
+      .toFile(`assets/images/${coveImageFileName}`);
    req.body.coverImage = `public/${coveImageFileName}`;
 
    // 2) loop images
@@ -69,7 +69,7 @@ const fileResize = catchAsync(async (req, res, next) => {
             .resize(2000, 1333)
             .toFormat("jpeg")
             .jpeg({ quality: 80 })
-            .toFile(`assets/img/property/${filename}`);
+            .toFile(`assets/images/${filename}`);
          req.body.images.push(`public/${filename}`);
       })
    );
