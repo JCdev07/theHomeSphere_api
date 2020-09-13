@@ -86,14 +86,14 @@ router.post("/login", (req, res, next) => {
             .compare(password, user.password)
             .then((result) => {
                if (result) {
-                  let { _id, fullname, email, isAdmin } = user;
+                  let { _id, firstname, lastname, email, isAdmin } = user;
                   let token = jwt.sign({ _id }, "secret_key");
                   console.log(token);
 
                   res.json({
                      request: "success",
                      message: "login successful",
-                     user: { _id, fullname, email, isAdmin },
+                     user: { _id, firstname, lastname, email, isAdmin },
                      token,
                   });
                } else {
