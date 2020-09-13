@@ -117,7 +117,10 @@ router.get(
    "/profile",
    passport.authenticate("jwt", { session: false }),
    (req, res, next) => {
-      res.send(req.user);
+      res.json({
+         request: "success",
+         user: req.user,
+      });
    }
 );
 
