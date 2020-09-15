@@ -124,13 +124,9 @@ router.put(
    passport.authenticate("jwt", { session: false }),
    adminOnly,
    (req, res, next) => {
-      Transaction.findByIdAndUpdate(
-         req.params.transactionId,
-         { status: req.body.status },
-         {
-            new: true,
-         }
-      )
+      Transaction.findByIdAndUpdate(req.params.transactionId, req.body, {
+         new: true,
+      })
          .then((transaction) => res.send(transaction))
          .catch(next);
    }
