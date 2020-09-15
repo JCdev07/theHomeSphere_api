@@ -95,6 +95,8 @@ router.get(
    passport.authenticate("jwt", { session: false }),
    (req, res, next) => {
       Transaction.findById(req.params.transactionId)
+         .populate("user")
+         .populate("property")
          .then((transaction) => {
             console.log(transaction.user._id === req.user._id);
             if (
