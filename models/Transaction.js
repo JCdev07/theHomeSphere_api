@@ -29,10 +29,6 @@ const TransactionSchema = new Schema(
          type: Number,
          required: [true, "Total Required"],
       },
-      numberOfGuest: {
-         type: Number,
-         required: [true, "numberOfGuest Required"],
-      },
       status: {
          type: String,
          required: [true, "Status Required"],
@@ -44,7 +40,7 @@ const TransactionSchema = new Schema(
       },
       isPaid: {
          type: Boolean,
-         default: true,
+         default: false,
       },
    },
    {
