@@ -127,7 +127,12 @@ router.put(
       Transaction.findByIdAndUpdate(req.params.transactionId, req.body, {
          new: true,
       })
-         .then((transaction) => res.send(transaction))
+         .then((transaction) =>
+            res.json({
+               request: "succes",
+               transaction,
+            })
+         )
          .catch(next);
    }
 );
