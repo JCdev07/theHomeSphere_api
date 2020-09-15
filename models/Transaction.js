@@ -51,7 +51,7 @@ const TransactionSchema = new Schema(
 );
 
 TransactionSchema.virtual("transactionId").get(function () {
-   return `THS${this._id}`;
+   return `THS-${this._id}`;
 });
 
 module.exports = mongoose.model("Transaction", TransactionSchema);

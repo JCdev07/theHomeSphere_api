@@ -9,16 +9,47 @@ const adminOnly = require("./../utils/isAdminOnly");
 router.get(
    "/",
    passport.authenticate("jwt", { session: false }),
-   adminOnly,
    (req, res, next) => {
-      Transaction.find()
-         .then((transactions) => {
-            res.json({
-               request: "succes",
-               transactions,
-            });
-         })
-         .catch(next);
+      let filter = {};
+
+      if (!req.user.isAdmin) {
+         filter = {
+            user: req.user._id,
+         };
+
+         Transaction.find(filter)
+            .populate("user")
+            .populate("property")
+            .then((transactions) => {
+               res.json({
+                  request: "succes",
+                  transactions,
+                  transactionCount: transactions.length,
+               });
+            })
+            .catch(next);
+      } else {
+         Transaction.find()
+            .populate("user")
+            .populate("property")
+            .then((transactions) => {
+               res.json({
+                  request: "succes",
+                  transactions,
+                  transactionCount: transactions.length,
+               });
+            })
+            .catch(next);
+      }
+
+      // Transaction.find()
+      //    .then((transactions) => {
+      //       res.json({
+      //          request: "succes",
+      //          transactions,
+      //       });
+      //    })
+      //    .catch(next);
    }
 );
 
@@ -65,9 +96,10 @@ router.get(
    (req, res, next) => {
       Transaction.findById(req.params.transactionId)
          .then((transaction) => {
+            console.log(transaction.user._id === req.user._id);
             if (
                req.user.isAdmin === true ||
-               req.user._id === transaction.user
+               transaction.user._id !== req.user._id
             ) {
                res.json({
                   request: "success",
