@@ -11,7 +11,6 @@ router.get(
    passport.authenticate("jwt", { session: false }),
    (req, res, next) => {
       let filter = {};
-
       if (!req.user.isAdmin) {
          filter = {
             user: req.user._id,
@@ -126,7 +125,7 @@ router.put(
    (req, res, next) => {
       Transaction.findByIdAndUpdate(
          req.params.transactionId,
-         { isPaid: req.body.isPaid, status: req.body.status },
+         { isPaid: req.body.isPaid },
          {
             new: true,
          }
