@@ -126,7 +126,7 @@ router.put(
    (req, res, next) => {
       Transaction.findByIdAndUpdate(
          req.params.transactionId,
-         { isComplete: req.body.isComplete, status: req.body.status },
+         { isPaid: req.body.isPaid, status: req.body.status },
          {
             new: true,
          }
